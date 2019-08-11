@@ -1,19 +1,41 @@
-package App.test.app.test.shared.dto;
+package App.test.app.test.io.entity;
 
 import java.io.Serializable;
 
-public class UserDto implements Serializable {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-	private static final long serialVersionUID = 7691630566333346169L;
+@Entity(name = "users")
+public class UserEntity implements Serializable {
+
+	private static final long serialVersionUID = 8284875322875721014L;
+
+	@Id
+	@GeneratedValue
 	private long id;
-	private String firstName;
-	private String lastName;
-	private String email;
+
+	@Column(nullable = false)
 	private String userId;
-	private String password;
+
+	@Column(nullable = false, length = 50)
+	private String firstName;
+	@Column(nullable = false, length = 50)
+	private String lastName;
+	@Column(nullable = false, length = 120)
+	private String email;
+	@Column(nullable = false)
 	private String encryptedPassword;
+	
 	private String emailVericationToken;
+
+//	@Column(nullable = false, columnDefinition = "boolean default false")
+	@Column(nullable = false)
 	private Boolean emailVericationStatus = false;
+	
+//	@OneToMany(mappedBy="userDatails", cascade=CascadeType.ALL)
+//	private List<AddressEntity> addresses;
 
 	public long getId() {
 		return id;
@@ -21,6 +43,14 @@ public class UserDto implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getFirstName() {
@@ -47,22 +77,6 @@ public class UserDto implements Serializable {
 		this.email = email;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public String getEncryptedPassword() {
 		return encryptedPassword;
 	}
@@ -86,5 +100,5 @@ public class UserDto implements Serializable {
 	public void setEmailVericationStatus(Boolean emailVericationStatus) {
 		this.emailVericationStatus = emailVericationStatus;
 	}
-
+	
 }
