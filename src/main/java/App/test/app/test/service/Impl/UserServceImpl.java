@@ -2,11 +2,15 @@ package App.test.app.test.service.Impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import App.test.app.test.UserRepository;
 import App.test.app.test.io.entity.UserEntity;
 import App.test.app.test.service.UserService;
+import App.test.app.test.shared.Util;
 import App.test.app.test.shared.dto.UserDto;
 
 @Service
@@ -15,14 +19,32 @@ public class UserServceImpl implements UserService {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
+	Util util;
+	
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	@Override
 	public UserDto createUser(UserDto user) {
+		//ensure email is unique
+		if(userRepository.findByEmail(user.getEmail())!=null) throw new RuntimeException("email already exists");
 		
+		//copy user information to UserEntity
 		UserEntity userEntity = new UserEntity();
 		BeanUtils.copyProperties(user, userEntity);
 		
-		userEntity.setEncryptedPassword("test");
-		userEntity.setUserId("testUserId");
+		//secure password
+		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		
+		//ensure userId is unique
+		String userId;
+		while(true) {
+			userId = util.generateUserId(30);
+			if(userRepository.findByUserId(userId) != null) continue;
+			else break;
+		}
+		userEntity.setUserId(userId);
 		
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 		
@@ -30,6 +52,12 @@ public class UserServceImpl implements UserService {
 		BeanUtils.copyProperties(storedUserDetails, returnValue);
 		
 		return returnValue;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
