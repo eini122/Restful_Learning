@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import App.test.app.test.UserRepository;
 import App.test.app.test.io.entity.UserEntity;
+import App.test.app.test.io.repositories.UserRepository;
 import App.test.app.test.service.UserService;
 import App.test.app.test.shared.Util;
 import App.test.app.test.shared.dto.UserDto;
@@ -54,6 +54,16 @@ public class UserServceImpl implements UserService {
 		UserDto returnValue = new UserDto();
 		BeanUtils.copyProperties(storedUserDetails, returnValue);
 		
+		return returnValue;
+	}
+	
+	@Override
+	public UserDto getUser(String email) {
+		UserEntity userEntity = userRepository.findByEmail(email);
+		
+		if(userEntity == null) throw new UsernameNotFoundException(email);
+		UserDto returnValue = new UserDto();
+		BeanUtils.copyProperties(userEntity, returnValue);
 		return returnValue;
 	}
 
