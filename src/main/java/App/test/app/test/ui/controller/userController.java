@@ -15,9 +15,15 @@ public class userController {
 	@Autowired
 	UserService userService;
 	
-	@GetMapping
-	public String getUser() {
-		return "get";
+	@GetMapping(path = "/{id}")
+	public UserResponse getUser(@PathVariable String id) {
+		UserResponse returnValue = new UserResponse();
+		
+		UserDto userDto = userService.getUserByUserId(id);
+		BeanUtils.copyProperties(userDto, returnValue);
+	
+		
+		return returnValue;
 	}
 	
 	@PostMapping
