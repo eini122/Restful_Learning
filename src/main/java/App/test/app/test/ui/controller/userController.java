@@ -18,16 +18,21 @@ public class userController {
 	@Autowired
 	UserService userService;
 	
+
+	//HTTP get request
 	@GetMapping(path = "/{id}",
 			produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
 			)
 	public UserResponse getUser(@PathVariable String id) {
+		//the order of Json response
 		UserResponse returnValue = new UserResponse();
 		
+		//get the user information by service layer by user id
 		UserDto userDto = userService.getUserByUserId(id);
+		//copy the details from database to return value by userDto class
 		BeanUtils.copyProperties(userDto, returnValue);
 	
-		
+		//return the data
 		return returnValue;
 	}
 	
@@ -50,9 +55,24 @@ public class userController {
 		return returnValue;
 	}
 	
-	@PutMapping
-	public String postUser() {
-		return "update";
+	@PutMapping(path = "/{id}",
+			consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+			produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+			)
+	public UserResponse updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
+		
+		UserResponse returnValue = new UserResponse();
+		
+		if(userDetails.getFirstName().isEmpty()) 
+			throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+		
+		UserDto userDto = new UserDto();
+		BeanUtils.copyProperties(userDetails, userDto);
+		
+		UserDto updatedUser = userService.updateUser(id, userDto);
+		BeanUtils.copyProperties(updatedUser, returnValue);
+		
+		return returnValue;
 	}
 	
 	@DeleteMapping
