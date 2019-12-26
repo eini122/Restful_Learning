@@ -67,7 +67,8 @@ public class UserServceImpl implements UserService {
 		UserEntity userEntity = userRepository.findByEmail(email);
 
 		if (userEntity == null)
-			throw new UsernameNotFoundException(email);
+			throw new UsernameNotFoundException("User with email: " + email + "Not Found");
+		
 		UserDto returnValue = new UserDto();
 		BeanUtils.copyProperties(userEntity, returnValue);
 		return returnValue;
@@ -89,7 +90,7 @@ public class UserServceImpl implements UserService {
 		UserEntity userEntity = userRepository.findByUserId(userId);
 
 		if (userEntity == null)
-			throw new UsernameNotFoundException(userId);
+			throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
 
 		BeanUtils.copyProperties(userEntity, returnValue);
 
