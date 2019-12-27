@@ -96,6 +96,8 @@ public class userController {
 		
 		List<UserResponse> returnValue = new ArrayList<>();
 		
+		if(page > 1) page-=1;
+		
 		List<UserDto>users = userService.getUsers(page, limit);
 		
 		for(UserDto userDto: users) {
