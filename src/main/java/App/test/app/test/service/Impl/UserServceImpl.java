@@ -3,6 +3,7 @@ package App.test.app.test.service.Impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,9 @@ import App.test.app.test.io.entity.UserEntity;
 import App.test.app.test.io.repositories.UserRepository;
 import App.test.app.test.service.UserService;
 import App.test.app.test.shared.Util;
+import App.test.app.test.shared.dto.AddressDTO;
 import App.test.app.test.shared.dto.UserDto;
 import App.test.app.test.ui.model.response.ErrorMessages;
-import App.test.app.test.ui.model.response.UserResponse;
 
 @Service
 public class UserServceImpl implements UserService {
@@ -41,9 +42,16 @@ public class UserServceImpl implements UserService {
 		if (userRepository.findByEmail(user.getEmail()) != null)
 			throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
 
+		for(int i = 0; i < user.getAddresses().size(); i++) {
+			AddressDTO address = user.getAddresses().get(i);
+			address.setUserDetails(user);
+			address.setAddressId(util.generateAddressId(30));
+			user.getAddresses().set(i, address);
+		}
 		// copy user information to UserEntity
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(user, userEntity);
+		//BeanUtils.copyProperties(user, userEntity);
+		ModelMapper modelMapper = new ModelMapper();
+		UserEntity userEntity = modelMapper.map(user, UserEntity.class);
 
 		// secure password
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -61,8 +69,8 @@ public class UserServceImpl implements UserService {
 
 		UserEntity storedUserDetails = userRepository.save(userEntity);
 
-		UserDto returnValue = new UserDto();
-		BeanUtils.copyProperties(storedUserDetails, returnValue);
+		//BeanUtils.copyProperties(storedUserDetails, returnValue);
+		UserDto returnValue = modelMapper.map(storedUserDetails, UserDto.class);
 
 		return returnValue;
 	}

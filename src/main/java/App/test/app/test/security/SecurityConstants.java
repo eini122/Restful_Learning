@@ -3,7 +3,7 @@ package App.test.app.test.security;
 import App.test.app.test.SpringApplicationContext;
 
 public class SecurityConstants {
-	public static final long EXPINRATION_TIME = 864000000; //10 days
+	public static final long EXPINRATION_TIME = 1800000; // 30 minutes
 	public static final String TOKEN_PREFIX = "Bearer ";
 	public static final String HEADER_STRING = "Authorization";
 	public static final String SIGN_UP_URL = "/users";
